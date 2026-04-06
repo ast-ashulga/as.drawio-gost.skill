@@ -1,10 +1,10 @@
 # as.drawio-gost.skill
 
-A Claude Code skill that generates **ГОСТ 19.701-90 / ISO 5807:1985** compliant algorithm flowcharts as native `.drawio` files.
+A skill for Claude Code and Cursor that generates **ГОСТ 19.701-90 / ISO 5807:1985** compliant algorithm flowcharts as native `.drawio` files.
 
 ## What it does
 
-When you ask Claude to create a diagram, flowchart, or block diagram (блок-схема), this skill:
+When you ask to create a diagram, flowchart, or block diagram (блок-схема), this skill:
 
 1. Reads and analyzes the source code or description
 2. Maps each construct to the correct GOST symbol (decisions, loops, I/O, subroutines, etc.)
@@ -13,6 +13,8 @@ When you ask Claude to create a diagram, flowchart, or block diagram (блок-�
 
 ## Activation
 
+### Claude Code
+
 Trigger automatically by asking Claude to:
 - "Create a flowchart for this function"
 - "Draw a block diagram"
@@ -20,6 +22,15 @@ Trigger automatically by asking Claude to:
 - Mention draw.io, flowchart, algorithm diagram, etc.
 
 Or invoke directly with `/drawio-gost`.
+
+### Cursor
+
+Trigger automatically by asking Cursor to:
+- "Create a flowchart for this function"
+- "Draw a block diagram"
+- "Generate a `.drawio` diagram"
+
+The skill is auto-detected from `.cursor/skills/drawio-gost/`.
 
 ## GOST compliance
 
@@ -46,9 +57,15 @@ Or invoke directly with `/drawio-gost`.
 └── references/
     ├── gost-symbols.md         # draw.io XML styles for all 25+ GOST symbols
     └── code-mapping.md         # Maps code constructs to GOST symbols
+
+.cursor/skills/drawio-gost/
+├── SKILL.md                    # Skill entry point for Cursor
+└── references/
+    ├── gost-symbols.md         # draw.io XML styles for all 25+ GOST symbols
+    └── code-mapping.md         # Maps code constructs to GOST symbols
 ```
 
 ## Requirements
 
-- Claude Code
+- Claude Code **or** Cursor
 - draw.io desktop app (for PNG/SVG/PDF export; `.drawio` files work without it)

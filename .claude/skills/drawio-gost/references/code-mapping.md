@@ -28,25 +28,36 @@ Decision {x == 1?} --Да--> Case 1 handler
 
 ### for loop
 
-Represent as: initialization Process + Decision diamond + body + increment Process + back-edge to Decision.
+**Standard `for` with numeric range** — represent as a **Hexagon (Preparation / Подготовка)**:
 
 ```
-[i = 0]           ← Process (initialization)
+[i = 0, N-1, 1]   ← Hexagon (var = start, end, step)
+    |Да                |Нет
+    ↓ (loop body)       → (continue after loop)
+[body]
     ↓
-{i < N?}          ← Decision diamond
-  |Да      |Нет
-  ↓         → (continue after loop)
-[body]            ← Process / other symbols
-  ↓
-[i = i + 1]       ← Process (increment)
-  ↓
-  → back to {i < N?}  ← back-edge (arrow MANDATORY)
+    → back to Hexagon  ← back-edge (arrow MANDATORY)
 ```
+
+The hexagon encodes all loop parameters in one block. Two exits:
+- **"Да"** — enter loop body (condition still holds)
+- **"Нет"** — exit loop (condition exhausted)
 
 **Layout pattern:**
-- Main flow goes downward through Да branch
-- Back-edge routes via the RIGHT side of the diagram
-- Нет exit routes to the LEFT side, then down to next block after loop
+- Hexagon in main flow column, "Да" exits downward into body
+- Back-edge routes via the RIGHT side back to the hexagon
+- "Нет" exit routes to the LEFT side, then down to the next block after the loop
+
+**Fallback:** If the `for` loop has a complex condition that does not fit `var = start, end, step` (e.g., pointer iteration, multiple conditions, no counter), use the Decision diamond decomposition instead:
+```
+[init]   ← Process
+    ↓
+{cond?}  ← Decision diamond
+  |Да      |Нет
+  ↓         → exit
+[body + increment]
+  → back to {cond?}
+```
 
 ### while loop
 
@@ -75,7 +86,7 @@ Back-edge labeled "Да" goes upward to body.
 
 ### for-range / iterator
 
-Treat like a standard for loop with Decision diamond.
+Treat like a standard for loop. Use **Hexagon** when the iterator has a clear start/end/step (e.g., `for (int i = 0; i < n; i++)`). Use Decision diamond for pointer/iterator-based loops without a numeric counter.
 
 ---
 
@@ -103,15 +114,15 @@ Same as function call — Predefined Process. Add a comment annotation "реку
 
 ### Read from stdin / user input
 ```
-Symbol:  Data (parallelogram)
-Style:   shape=parallelogram;perimeter=parallelogramPerimeter
+Symbol:  Card (Карточка)
+Style:   shape=card;size=18;
 Text:    "Ввод x, y" or "scanf(...)"
 ```
 
 ### Print / write to stdout
 ```
-Symbol:  Data (parallelogram)
-Style:   shape=parallelogram;perimeter=parallelogramPerimeter
+Symbol:  Document (Документ)
+Style:   shape=mxgraph.flowchart.document;
 Text:    "Вывод result" or "printf(...)"
 ```
 
@@ -178,8 +189,9 @@ Symbol:  Direct Access Storage (cylinder) for the data store
 | Process | Assignment or imperative verb + object | "sum = a + b", "i = i + 1" |
 | Decision | Condition ending with `?` | "i < N?", "x > 0?", "key найден?" |
 | Predefined Process | Function signature | "sortRow(row, m)", "printMatrix(E, N, M)" |
-| Data (I/O) | "Ввод"/"Вывод" + entities | "Ввод N, M", "Вывод result" |
-| Preparation | Loop params: `var = start, end, step` | "i = 0, N-1, 1" |
+| Card (input) | "Ввод" + entities | "Ввод N, M", "scanf(...)" |
+| Document (output) | "Вывод" + entities | "Вывод result", "printf(...)" |
+| Preparation (Hexagon) | Loop params: `var = start, end, step` | "i = 0, N-1, 1" |
 
 ---
 

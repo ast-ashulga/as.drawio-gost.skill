@@ -133,8 +133,17 @@ fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Tim
   ```
   shape=parallelogram;perimeter=parallelogramPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;
   ```
-- **Use:** Input/output operations (scanf, printf, cin, cout)
-- **Text:** "Ввод N, M" (Input), "Вывод result" (Output)
+- **Use:** Generic data flow or mixed I/O when a more specific symbol is not applicable. Prefer **Card** for keyboard input and **Document** for printed/screen output.
+
+#### Card (Карточка / Ввод с клавиатуры)
+- **Shape:** Rectangle with a cut upper-left corner
+- **Dimensions:** width = `b`, height = `a`
+- **draw.io style:**
+  ```
+  shape=card;size=18;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;
+  ```
+- **Use:** Keyboard / user input — `scanf`, `cin`, manual data entry
+- **Text:** "Ввод N, M"
 
 #### Document (Документ)
 - **Shape:** Rectangle with wavy bottom edge

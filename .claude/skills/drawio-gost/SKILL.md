@@ -239,13 +239,14 @@ fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Tim
 | **Terminator** (Начало/Конец) | `rounded=1;arcSize=50;` | b | **a/2** |
 | **Process** (Процесс) | *(base style only — plain rectangle)* | b | a |
 | **Decision** (Решение) | `rhombus;` | b | a |
-| **Data I/O** (Ввод/Вывод) | `shape=parallelogram;perimeter=parallelogramPerimeter;` | b | a |
+| **Card** (Ввод / keyboard input) | `shape=card;size=18;` | b | a |
+| **Document** (Вывод / output) | `shape=mxgraph.flowchart.document;` | b | a |
 | **Predefined Process** (Подпрограмма) | `shape=mxgraph.flowchart.predefined_process;` | b | a |
-| **Preparation** (Подготовка) | `shape=hexagon;perimeter=hexagonPerimeter2;size=0.2;` | b | a |
+| **Preparation** (Подготовка / for-loop) | `shape=hexagon;perimeter=hexagonPerimeter2;size=0.2;` | b | a |
 | **Connector** (Соединитель) | `ellipse;` | a/2 | a/2 |
 | **Loop Begin** (Граница цикла нач.) | `shape=mxgraph.flowchart.loop_limit;` | b | a×0.6 |
 | **Loop End** (Граница цикла кон.) | `shape=mxgraph.flowchart.loop_limit;flipV=1;` | b | a×0.6 |
-| **Document** (Документ) | `shape=mxgraph.flowchart.document;` | b | a |
+| **Data I/O** (generic) | `shape=parallelogram;perimeter=parallelogramPerimeter;` | b | a |
 | **Comment** (Комментарий) | `shape=mxgraph.flowchart.annotation_1;fillColor=none;align=left;` | varies | varies |
 
 ## Edge Style
@@ -302,33 +303,33 @@ Label placement via edge `value` attribute:
 
 ### Back-edge Routing Pattern
 
-For loops, use explicit waypoints to create clean orthogonal routing:
+#### for loop with Hexagon (Preparation)
+
+Use a Hexagon for standard numeric `for` loops. The hexagon has two exits:
 
 ```
 Main flow column (center)
     |
     v
-[init: i = 0]          x=190..290 (centered at 240)
-    |
-    v
-{i < N?} ----Нет----> routes LEFT (x=60) then DOWN to after-loop block
-    |Да
-    v
+[i = 0, N-1, 1]        x=190..290 (centered at 240)  ← Hexagon
+    |Да                  |Нет
+    v                     → routes LEFT (x=60) then DOWN to after-loop block
 [body]
     |
-    v
-[i = i + 1]
-    |
-    +----> routes RIGHT (x=360) then UP back to {i < N?}
+    +----> routes RIGHT (x=360) then UP back to Hexagon
 ```
 
 **Implementation with waypoints:**
 ```xml
-<mxCell id="back_edge" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="increment" target="decision" parent="1">
+<mxCell id="hex_loop" value="i = 0, N-1, 1" style="shape=hexagon;perimeter=hexagonPerimeter2;size=0.2;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
+    <mxGeometry x="190" y="(hex_y)" width="100" height="50" as="geometry"/>
+</mxCell>
+
+<mxCell id="back_edge" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="last_body_cell" target="hex_loop" parent="1">
     <mxGeometry relative="1" as="geometry">
         <Array as="points">
-            <mxPoint x="360" y="(increment_center_y)"/>
-            <mxPoint x="360" y="(decision_center_y)"/>
+            <mxPoint x="360" y="(last_body_center_y)"/>
+            <mxPoint x="360" y="(hex_center_y)"/>
         </Array>
     </mxGeometry>
 </mxCell>
@@ -336,14 +337,30 @@ Main flow column (center)
 
 For "Нет" exit routing left:
 ```xml
-<mxCell id="no_exit" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="decision" target="after_loop" parent="1">
+<mxCell id="no_exit" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="hex_loop" target="after_loop" parent="1">
     <mxGeometry relative="1" as="geometry">
         <Array as="points">
-            <mxPoint x="60" y="(decision_center_y)"/>
+            <mxPoint x="60" y="(hex_center_y)"/>
             <mxPoint x="60" y="(after_loop_center_y)"/>
         </Array>
     </mxGeometry>
 </mxCell>
+```
+
+#### while / complex for loop with Decision diamond
+
+For `while` loops or `for` loops that don't fit `var = start, end, step`:
+
+```
+Main flow column (center)
+    |
+    v
+{cond?} ----Нет----> routes LEFT (x=60) then DOWN to after-loop block
+    |Да
+    v
+[body]
+    |
+    +----> routes RIGHT (x=360) then UP back to {cond?}
 ```
 
 ### Nested Loop Routing
@@ -393,12 +410,13 @@ Each function gets its own `<diagram>` page within a single `<mxfile>`:
 |---|---|---|
 | `if/else` | Decision diamond | 2 exits: "Да"/"Нет" |
 | `switch/case` | Chain of Decision diamonds | One diamond per case value |
-| `for` loop | Process (init) + Decision + body + Process (increment) + back-edge | |
+| `for` loop (numeric range) | Preparation Hexagon + body + back-edge | Hexagon text: "i = 0, N-1, 1" |
+| `for` loop (complex condition) | Process (init) + Decision + body + Process (increment) + back-edge | Fallback when no clear start/end/step |
 | `while` loop | Decision at top + body + back-edge | |
 | `do-while` loop | body + Decision at bottom + back-edge labeled "Да" going up | |
 | Function call | Predefined Process | Double-bordered rectangle |
-| `scanf`/`cin`/input | Data I/O (parallelogram) | Text: "Ввод ..." |
-| `printf`/`cout`/output | Data I/O (parallelogram) | Text: "Вывод ..." |
+| `scanf`/`cin`/input | Card (Карточка) | Text: "Ввод ..." |
+| `printf`/`cout`/output | Document (Документ) | Text: "Вывод ..." |
 | Function entry | Terminator | "Начало" or function signature |
 | Function exit | Terminator | "Конец" or "Возврат" |
 | Variable assignment | Process | "sum = a + b" |
@@ -422,64 +440,48 @@ This template shows the correct structure for a simple function with a loop. Use
                     <mxGeometry x="190" y="20" width="100" height="25" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="io_input" value="Ввод N" style="shape=parallelogram;perimeter=parallelogramPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
+                <mxCell id="io_input" value="Ввод N" style="shape=card;size=18;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
                     <mxGeometry x="190" y="85" width="100" height="50" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="p_init" value="i = 0" style="fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
+                <mxCell id="hex_loop" value="i = 0, N-1, 1" style="shape=hexagon;perimeter=hexagonPerimeter2;size=0.2;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
                     <mxGeometry x="190" y="175" width="100" height="50" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="d_loop" value="i &lt; N?" style="rhombus;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
+                <mxCell id="io_output" value="Вывод i" style="shape=mxgraph.flowchart.document;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
                     <mxGeometry x="190" y="265" width="100" height="50" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="io_output" value="Вывод i" style="shape=parallelogram;perimeter=parallelogramPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
-                    <mxGeometry x="190" y="355" width="100" height="50" as="geometry"/>
-                </mxCell>
-
-                <mxCell id="p_inc" value="i = i + 1" style="fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
-                    <mxGeometry x="190" y="445" width="100" height="50" as="geometry"/>
-                </mxCell>
-
                 <mxCell id="t_end" value="Конец" style="rounded=1;arcSize=50;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;whiteSpace=wrap;" vertex="1" parent="1">
-                    <mxGeometry x="190" y="555" width="100" height="25" as="geometry"/>
+                    <mxGeometry x="190" y="375" width="100" height="25" as="geometry"/>
                 </mxCell>
 
                 <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" source="t_start" target="io_input" parent="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" source="io_input" target="p_init" parent="1">
+                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" source="io_input" target="hex_loop" parent="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" source="p_init" target="d_loop" parent="1">
+                <mxCell id="e3" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;" edge="1" source="hex_loop" target="io_output" parent="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="e4" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;" edge="1" source="d_loop" target="io_output" parent="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-
-                <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" source="io_output" target="p_inc" parent="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-
-                <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="p_inc" target="d_loop" parent="1">
+                <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="io_output" target="hex_loop" parent="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="360" y="470"/>
                             <mxPoint x="360" y="290"/>
+                            <mxPoint x="360" y="200"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
 
-                <mxCell id="e7" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="d_loop" target="t_end" parent="1">
+                <mxCell id="e5" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Times New Roman;fontColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="hex_loop" target="t_end" parent="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="120" y="290"/>
-                            <mxPoint x="120" y="568"/>
+                            <mxPoint x="120" y="200"/>
+                            <mxPoint x="120" y="388"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>

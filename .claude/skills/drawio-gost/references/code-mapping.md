@@ -45,8 +45,9 @@ The hexagon encodes all loop parameters in one block. Two exits:
 
 **Layout pattern:**
 - Hexagon in main flow column, "Да" exits downward into body
-- Back-edge routes via the RIGHT side back to the hexagon
+- Back-edge routes via the RIGHT side, then UP above the hexagon, entering at **top center** (entryX=0.5, entryY=0)
 - "Нет" exit routes to the LEFT side, then down to the next block after the loop
+- **No connections enter the hexagon from left or right edges** — input always enters from the top center
 
 **Fallback:** If the `for` loop has a complex condition that does not fit `var = start, end, step` (e.g., pointer iteration, multiple conditions, no counter), use the Decision diamond decomposition instead:
 ```

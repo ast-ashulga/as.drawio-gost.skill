@@ -108,7 +108,7 @@ fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=11;fontFamily=Tim
   ```
 - **Use:** Loop counter initialization / for-loop header
 - **Text:** Loop parameters "i = 1, n, 1" (variable = start, end, step)
-- **Connection rule:** Input (incoming flow and back-edge) MUST connect to the **top center** of the hexagon (`entryX=0.5;entryY=0`). NO input connections to left or right edges. Exits ("Да" from bottom, "Нет" from left) are separate outputs.
+- **Connection rule:** Main flow input connects to the **top center** of the hexagon (`entryX=0.5;entryY=0`). Loop back-edge connects to the **right edge** of the hexagon (`entryX=1;entryY=0.5`). Exits: "Да" from bottom, "Нет" from left.
 
 #### Manual Operation (Ручная операция)
 - **Shape:** Inverted trapezoid (wider at top)

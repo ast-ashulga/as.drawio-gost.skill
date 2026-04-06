@@ -311,12 +311,12 @@ Use a Hexagon for standard numeric `for` loops. The hexagon has two exits:
 Main flow column (center)
     |
     v (entry: top center)
-[i = 0, N-1, 1]        x=190..290 (centered at 240)  ← Hexagon
+[i = 0, N-1, 1]  <---- routes RIGHT (x=360) then UP ← back-edge enters RIGHT edge
     |Да                  |Нет
     v                     → routes LEFT (x=60) then DOWN to after-loop block
 [body]
     |
-    +----> routes RIGHT (x=360) then UP to above Hexagon, then LEFT to top center
+    +----> routes RIGHT (x=360) then UP to hexagon right edge
 ```
 
 **Implementation with waypoints:**
@@ -325,11 +325,11 @@ Main flow column (center)
     <mxGeometry x="190" y="(hex_y)" width="100" height="50" as="geometry"/>
 </mxCell>
 
-<mxCell id="back_edge" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="last_body_cell" target="hex_loop" parent="1">
+<mxCell id="back_edge" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="last_body_cell" target="hex_loop" parent="1">
     <mxGeometry relative="1" as="geometry">
         <Array as="points">
             <mxPoint x="360" y="(last_body_center_y)"/>
-            <mxPoint x="360" y="(hex_y - 20)"/>
+            <mxPoint x="360" y="(hex_center_y)"/>
         </Array>
     </mxGeometry>
 </mxCell>
@@ -468,11 +468,11 @@ This template shows the correct structure for a simple function with a loop. Use
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
 
-                <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="io_output" target="hex_loop" parent="1">
+                <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;strokeColor=#000000;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="io_output" target="hex_loop" parent="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="360" y="290"/>
-                            <mxPoint x="360" y="155"/>
+                            <mxPoint x="360" y="200"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
